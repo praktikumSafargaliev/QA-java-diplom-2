@@ -68,6 +68,7 @@ public class CreateUserTest {
     }
 
 
+
     @After
     public void deleteUser() {
         if (getAccessToken() != null) {

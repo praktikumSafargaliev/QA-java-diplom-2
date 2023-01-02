@@ -63,10 +63,9 @@ public class AuthorisationUserTest {
     }
 
     @Step("Создаём пользователя и кладём тело ответа в класс UserAuthInfo")
-    public Response createUser() {
+    public void createUser() {
         response = given().header("Content-type", "application/json").body(user).post(userRegistrationEndpoint);
         userAuthInfo = response.body().as(UserAuthInfo.class);
-        return response;
     }
 
     @Step("Авторизация пользователем")

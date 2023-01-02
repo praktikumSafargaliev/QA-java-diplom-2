@@ -56,7 +56,7 @@ public class ChangeUserDataTest {
 
     @Test
     @DisplayName("Пытаемся изменить имя пользователя, не отправляя токен авторизации")
-    public void changeUserNameTestWithoutToken() {
+    public void changeUserNameTestWithoutTokenTest() {
         user.setName("ExpectedUserName");
         changeUserDataWithoutToken()
                 .then().statusCode(401)
@@ -65,12 +65,14 @@ public class ChangeUserDataTest {
 
     @Test
     @DisplayName("Пытаемся изменить почту пользователя, не отправляя токен авторизации")
-    public void changeUserEmailTestWithoutToken() {
+    public void changeUserEmailTestWithoutTokenTest() {
         user.setEmail("expectedmail@ya.ru");
         changeUserDataWithoutToken()
                 .then().statusCode(401)
                 .and().body("success", equalTo(false), "message", equalTo("You should be authorised"));
     }
+
+
 
     @After
     public void deleteUser() {
@@ -80,10 +82,9 @@ public class ChangeUserDataTest {
     }
 
     @Step("Создаём пользователя и кладём тело ответа в класс UserAuthInfo")
-    public Response createUser() {
+    public void createUser() {
         response = given().header("Content-type", "application/json").body(user).post(userRegistrationEndpoint);
         userAuthInfo = response.body().as(UserAuthInfo.class);
-        return response;
     }
 
     @Step("Отправляем PATCH запрос с токеном авторизации на изменение данных пользователя")
