@@ -70,6 +70,7 @@ public class CreateUserTest {
 
 
     @After
+    @DisplayName("Удаляем пользователя")
     public void deleteUser() {
         if (getAccessToken() != null) {
             given().header("Authorization", getAccessToken()).delete(userDataEndpoint);
