@@ -16,7 +16,7 @@ public class CreateUserTest {
     private Response response;
     private final String baseURI = "https://stellarburgers.nomoreparties.site";
     private final String userRegistrationEndpoint = "/api/auth/register/";
-    private final String authUserEndpoint = "/api/auth/user/";
+    private final String userDataEndpoint = "/api/auth/user/";
     private final String testEmail = "autotestruslan@ya.ru";
     private final String testPassword = "autotest";
     private final String testName = "Ruslan";
@@ -27,12 +27,6 @@ public class CreateUserTest {
         user = new User(testEmail, testPassword, testName);
     }
 
-    @After
-    public void deleteUser() {
-        if (getAccessToken() != null) {
-            given().header("Authorization", getAccessToken()).delete(authUserEndpoint);
-        }
-    }
 
     @Test
     @DisplayName("Проверяем создание пользователя")
@@ -71,6 +65,14 @@ public class CreateUserTest {
         user = new User(testEmail, testPassword, "");
         createUser().then().statusCode(403)
                 .and().assertThat().body("success", equalTo(false), "message", equalTo("Email, password and name are required fields"));
+    }
+
+
+    @After
+    public void deleteUser() {
+        if (getAccessToken() != null) {
+            given().header("Authorization", getAccessToken()).delete(userDataEndpoint);
+        }
     }
 
     @Step("Создаём пользователя и кладём тело ответа в класс UserAuthInfo")
