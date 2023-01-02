@@ -17,8 +17,8 @@ public class CreateUserTest {
     private final String baseURI = "https://stellarburgers.nomoreparties.site";
     private final String userRegistrationEndpoint = "/api/auth/register/";
     private final String authUserEndpoint = "/api/auth/user/";
-    private final String testEmail = "autotestaddpi120111591ddd@ya.ru";
-    private final String testPassword = "autotest123";
+    private final String testEmail = "autotestruslan@ya.ru";
+    private final String testPassword = "autotest";
     private final String testName = "Ruslan";
 
     @Before
