@@ -1,3 +1,5 @@
+package ingredients;
+
 import java.util.ArrayList;
 
 public class Ingredient {

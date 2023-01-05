@@ -1,3 +1,5 @@
+package user;
+
 public class UserAuthInfo {
 
         private boolean success;

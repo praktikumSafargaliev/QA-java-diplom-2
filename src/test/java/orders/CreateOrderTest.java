@@ -1,3 +1,8 @@
+package orders;
+
+import ingredients.Ingredient;
+import user.User;
+import user.UserAuthInfo;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
@@ -7,6 +12,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
+import static constants.Constant.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
@@ -16,21 +22,14 @@ public class CreateOrderTest {
     private Response response;
     private UserAuthInfo userAuthInfo;
     private User user;
-    private final String baseURI = "https://stellarburgers.nomoreparties.site";
-    private final String orderCreateEndpoint = "/api/orders/";
-    private final String userRegistrationEndpoint = "/api/auth/register/";
-    private final String userDataEndpoint = "/api/auth/user/";
     private final String ingredient_1 = "61c0c5a71d1f82001bdaaa6d"; // "Флюоресцентная булка R2-D3"
     private final String ingredient_2 = "61c0c5a71d1f82001bdaaa6f"; // "Мясо бессмертных моллюсков Protostomia"
     private final String expectedOrderName = "Флюоресцентный бессмертный бургер";
-    private final String testEmail = "autotestruslan@ya.ru";
-    private final String testPassword = "autotest";
-    private final String testName = "Ruslan";
     private final ArrayList<String> ingredients = new ArrayList<>();
 
     @Before
     public void setUp() {
-        RestAssured.baseURI = baseURI;
+        RestAssured.baseURI = BASE_URI;
         ingredients.add(ingredient_1);
         ingredients.add(ingredient_2);
         ingredient = new Ingredient(ingredients);
@@ -75,27 +74,27 @@ public class CreateOrderTest {
     @Step("Удаляем пользователя")
     public void deleteUser() {
         if (getAccessToken() != null) {
-            given().header("Authorization", getAccessToken()).delete(userDataEndpoint);
+            given().header("Authorization", getAccessToken()).delete(USER_DATA_ENDPOINT);
         }
     }
 
     @Step("Отправляем запрос на создание заказа без авторизации")
     public Response createOrderWithoutToken() {
-        response = given().headers("Content-type", "application/json").body(ingredient).post(orderCreateEndpoint);
+        response = given().headers("Content-type", "application/json").body(ingredient).post(ORDER_ENDPOINT);
         return response;
     }
 
 
     @Step("Отправляем запрос на создание заказа с токеном авторизации")
     public Response createOrderWithToken() {
-        response = given().headers("Authorization", getAccessToken(),  "Content-type", "application/json").body(ingredient).post(orderCreateEndpoint);
+        response = given().headers("Authorization", getAccessToken(),  "Content-type", "application/json").body(ingredient).post(ORDER_ENDPOINT);
         return response;
     }
 
     @Step("Создаём пользователя и кладём тело ответа в класс UserAuthInfo")
     public void createUser() {
-        user = new User(testEmail, testPassword, testName);
-        response = given().header("Content-type", "application/json").body(user).post(userRegistrationEndpoint);
+        user = new User(TEST_EMAIL, TEST_PASSWORD, TEST_NAME);
+        response = given().header("Content-type", "application/json").body(user).post(USER_REGISTRATION_ENDPOINT);
         userAuthInfo = response.body().as(UserAuthInfo.class);
     }
 

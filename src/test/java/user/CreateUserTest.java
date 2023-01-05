@@ -1,3 +1,5 @@
+package user;
+
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
@@ -6,6 +8,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static constants.Constant.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -14,17 +17,11 @@ public class CreateUserTest {
     private User user;
     private UserAuthInfo userAuthInfo;
     private Response response;
-    private final String baseURI = "https://stellarburgers.nomoreparties.site";
-    private final String userRegistrationEndpoint = "/api/auth/register/";
-    private final String userDataEndpoint = "/api/auth/user/";
-    private final String testEmail = "autotestruslan@ya.ru";
-    private final String testPassword = "autotest";
-    private final String testName = "Ruslan";
 
     @Before
     public void setUp() {
-        RestAssured.baseURI = baseURI;
-        user = new User(testEmail, testPassword, testName);
+        RestAssured.baseURI = BASE_URI;
+        user = new User(TEST_EMAIL, TEST_PASSWORD, TEST_NAME);
     }
 
 
@@ -39,14 +36,14 @@ public class CreateUserTest {
     @DisplayName("Проверяем создание существующего пользователя")
     public void createExistingUserTest() {
         createUser();
-        given().header("Content-type", "application/json").body(user).post(userRegistrationEndpoint).then().statusCode(403)
+        given().header("Content-type", "application/json").body(user).post(USER_REGISTRATION_ENDPOINT).then().statusCode(403)
                 .and().assertThat().body("success", equalTo(false), "message", equalTo("User already exists"));
     }
 
     @Test
     @DisplayName("Проверяем создание пользователя без заполненного обязательного поля: email")
     public void createUserWithEmptyEmail() {
-        user = new User("", testPassword, testName);
+        user = new User("", TEST_PASSWORD, TEST_NAME);
         createUser().then().statusCode(403)
                 .and().assertThat().body("success", equalTo(false), "message", equalTo("Email, password and name are required fields"));
     }
@@ -54,7 +51,7 @@ public class CreateUserTest {
     @Test
     @DisplayName("Проверяем создание пользователя без заполненного обязательного поля: password")
     public void createUserWithEmptyPassword() {
-        user = new User(testEmail, "", testName);
+        user = new User(TEST_EMAIL, "", TEST_NAME);
         createUser().then().statusCode(403)
                 .and().assertThat().body("success", equalTo(false), "message", equalTo("Email, password and name are required fields"));
     }
@@ -62,7 +59,7 @@ public class CreateUserTest {
     @Test
     @DisplayName("Проверяем создание пользователя без заполненного обязательного поля: name")
     public void createUserWithEmptyName() {
-        user = new User(testEmail, testPassword, "");
+        user = new User(TEST_EMAIL, TEST_PASSWORD, "");
         createUser().then().statusCode(403)
                 .and().assertThat().body("success", equalTo(false), "message", equalTo("Email, password and name are required fields"));
     }
@@ -73,13 +70,13 @@ public class CreateUserTest {
     @DisplayName("Удаляем пользователя")
     public void deleteUser() {
         if (getAccessToken() != null) {
-            given().header("Authorization", getAccessToken()).delete(userDataEndpoint);
+            given().header("Authorization", getAccessToken()).delete(USER_DATA_ENDPOINT);
         }
     }
 
     @Step("Создаём пользователя и кладём тело ответа в класс UserAuthInfo")
     public Response createUser() {
-        response = given().header("Content-type", "application/json").body(user).post(userRegistrationEndpoint);
+        response = given().header("Content-type", "application/json").body(user).post(USER_REGISTRATION_ENDPOINT);
         userAuthInfo = response.body().as(UserAuthInfo.class);
         return response;
     }

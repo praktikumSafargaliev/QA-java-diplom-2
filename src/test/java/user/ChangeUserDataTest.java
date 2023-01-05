@@ -1,3 +1,5 @@
+package user;
+
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
@@ -6,6 +8,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static constants.Constant.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -14,17 +17,11 @@ public class ChangeUserDataTest {
     private User user;
     private UserAuthInfo userAuthInfo;
     private Response response;
-    private final String baseURI = "https://stellarburgers.nomoreparties.site";
-    private final String userRegistrationEndpoint = "/api/auth/register/";
-    private final String userDataEndpoint = "/api/auth/user/";
-    private final String testEmail = "autotestruslan@ya.ru";
-    private final String testPassword = "autotest";
-    private final String testName = "Ruslan";
 
     @Before
     public void setUp() {
-        RestAssured.baseURI = baseURI;
-        user = new User(testEmail, testPassword, testName);
+        RestAssured.baseURI = BASE_URI;
+        user = new User(TEST_EMAIL, TEST_PASSWORD, TEST_NAME);
         createUser();
     }
 
@@ -48,10 +45,10 @@ public class ChangeUserDataTest {
         String createdUserToken = userAuthInfo.getAccessToken();
         user.setEmail("existingemail@ya.ru");
         createUser();
-        given().headers("Authorization", createdUserToken,  "Content-type", "application/json").body(user).patch(userDataEndpoint)
+        given().headers("Authorization", createdUserToken,  "Content-type", "application/json").body(user).patch(USER_DATA_ENDPOINT)
                 .then().statusCode(403)
                 .and().body("success", equalTo(false), "message", equalTo("User with such email already exists")); // изменяем данные созданного в Before пользователя
-        given().header("Authorization", createdUserToken).delete(userDataEndpoint); // удаляем созданного в Before пользователя, второй пользователь удалится после теста
+        given().header("Authorization", createdUserToken).delete(USER_DATA_ENDPOINT); // удаляем созданного в Before пользователя, второй пользователь удалится после теста
     }
 
     @Test
@@ -78,25 +75,25 @@ public class ChangeUserDataTest {
     @DisplayName("Удаляем пользователя")
     public void deleteUser() {
         if (getAccessToken() != null) {
-            given().header("Authorization", getAccessToken()).delete(userDataEndpoint);
+            given().header("Authorization", getAccessToken()).delete(USER_DATA_ENDPOINT);
         }
     }
 
     @Step("Создаём пользователя и кладём тело ответа в класс UserAuthInfo")
     public void createUser() {
-        response = given().header("Content-type", "application/json").body(user).post(userRegistrationEndpoint);
+        response = given().header("Content-type", "application/json").body(user).post(USER_REGISTRATION_ENDPOINT);
         userAuthInfo = response.body().as(UserAuthInfo.class);
     }
 
     @Step("Отправляем PATCH запрос с токеном авторизации на изменение данных пользователя")
     public Response changeUserData() {
-            response = given().headers("Authorization", getAccessToken(),  "Content-type", "application/json").body(user).patch(userDataEndpoint);
+            response = given().headers("Authorization", getAccessToken(),  "Content-type", "application/json").body(user).patch(USER_DATA_ENDPOINT);
             return response;
     }
 
     @Step("Отправляем PATCH запрос БЕЗ токена авторизации на изменение данных пользователя")
     public Response changeUserDataWithoutToken() {
-        response = given().headers("Content-type", "application/json").body(user).patch(userDataEndpoint);
+        response = given().headers("Content-type", "application/json").body(user).patch(USER_DATA_ENDPOINT);
         return response;
     }
 
